@@ -971,7 +971,7 @@ void espNowReceiveCB(uint8_t* address, uint8_t* data, uint8_t len, signed int rs
 
   // Verify if json command
   if (data[0] == '{') {
-    Serial.println("this seems to be json");
+    DEBUG_PRINTLN(F("First character was '{', checking if it is JSON command"));
     bool verboseResponse = false;
     if (!requestJSONBufferLock(16)) {
       Serial.println(F("{\"error\":3}")); // ERR_NOBUF
@@ -1000,7 +1000,7 @@ void espNowReceiveCB(uint8_t* address, uint8_t* data, uint8_t len, signed int rs
     }
     else{
       releaseJSONBufferLock();
-      Serial.println("Deserialization error");
+      DEBUG_PRINTLN(F("Deserialization error, not a valid JSON"));
     }
   }
 
