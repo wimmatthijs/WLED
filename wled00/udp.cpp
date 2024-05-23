@@ -971,11 +971,6 @@ void espNowReceiveCB(uint8_t* address, uint8_t* data, uint8_t len, signed int rs
 
   // Verify if json command
   if (data[0] == '{') {
-    if (strcmp(last_signal_src, linked_remote) != 0) {
-      DEBUG_PRINT(F("ESP Now Message Received from Unlinked Sender: "));
-      DEBUG_PRINTLN(last_signal_src);
-    return;
-    }
     Serial.println("this seems to be json");
     bool verboseResponse = false;
     if (!requestJSONBufferLock(16)) {
@@ -984,6 +979,11 @@ void espNowReceiveCB(uint8_t* address, uint8_t* data, uint8_t len, signed int rs
     }
     DeserializationError error = deserializeJson(*pDoc, data);
     if (!error) {
+      if (strcmp(last_signal_src, linked_remote) != 0) {
+        DEBUG_PRINT(F("ESP Now Message Received from Unlinked Sender: "));
+        DEBUG_PRINTLN(last_signal_src);
+        return;
+      }
       verboseResponse = deserializeState(pDoc->as<JsonObject>());
       //only send response if TX pin is unused for other purposes
       if (verboseResponse && (!pinManager.isPinAllocated(hardwareTX) || pinManager.getPinOwner(hardwareTX) == PinOwner::DebugOut)) {
